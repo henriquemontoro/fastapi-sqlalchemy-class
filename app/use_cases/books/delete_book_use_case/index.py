@@ -3,14 +3,17 @@ from repositories.book_repository import BookRepository
 from database.database import get_db
 from sqlalchemy.orm import Session
 from use_cases.books.delete_book_use_case.delete_book_use_case import DeleteBookUseCase
+from pathlib import Path
 
 router = APIRouter()
+
+_docs = (Path(__file__).parent.parent.parent.parent / "docs" / "delete_book.md").read_text()
 
 def get_use_case(db: Session = Depends(get_db)) -> DeleteBookUseCase:
     book_repository = BookRepository(db)
     return DeleteBookUseCase(book_repository)
 
-@router.delete("/books/{book_id}")
+@router.delete("/books/{book_id}", description=_docs, summary="Remocao de Livro", tags=["Books"])
 def delete_book(book_id: int, use_case: DeleteBookUseCase = Depends(get_use_case)):
     success = use_case.execute(book_id)
     if not success:

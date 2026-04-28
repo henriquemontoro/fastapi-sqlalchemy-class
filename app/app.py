@@ -4,6 +4,8 @@ import os
 import glob
 from importlib import import_module
 
+# Mude a linha app = FastAPI() para isso:
+
 app = FastAPI(
     title="Documentação da API de livros e autores da Trilha da Insper Jr",
     description="Essa é uma API para gerenciar livros e autores, permitindo operações CRUD e o gerenciamento do relacionamento entre eles.",
@@ -18,21 +20,20 @@ app = FastAPI(
         "url": "https://opensource.org/licenses/MIT",
     },
 )
-
-
-@app.get("/")
+@app.get("/") # Aqui é definida uma rota GET para o endpoint raiz ("/") da aplicação. Assim, essa rota pode ser acessada para verficar se a aplicação está funcionando corretamente.
 def test():
-    return {"status": "OK v2 (3)"}
+    return {"status": "OK v2 (3)"} 
 
-app.add_middleware(
+app.add_middleware( # Aqui é adicionado um middleware de CORS (Cross-Origin Resource Sharing) à aplicação FastAPI.
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
+# Aqui é definido o diretório de trabalho atual e o diretório onde estão os casos de uso (use_cases). Em seguida, são buscados todos os arquivos index.py dentro do diretório use_cases e seus subdiretórios. 
+# Assim, para cada arquivo encontrado, o código tenta importar o módulo correspondente e, se o módulo tiver um atributo router, ele é incluído na aplicação FastAPI.
 working_directory = os.path.dirname(os.path.abspath(__file__))
 use_cases_directory = os.path.join(working_directory, "use_cases")
 routes = glob.glob(os.path.join(use_cases_directory, "**/index.py"), recursive=True)

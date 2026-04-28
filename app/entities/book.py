@@ -2,17 +2,21 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class Book(BaseModel):
-    id: Optional[int] = None
-    title: str = Field(..., min_length=1, max_length=255)
-    isbn: Optional[str] = Field(..., min_length=10, max_length=17)
-    authors: List['Author'] = Field(default_factory=list)
-    
+    """
+    Entidade Book usando Pydantic
+    Representa um livro no domínio da aplicação
+    """
+    id: Optional[int] = Field(None, description="ID do livro", example=1)
+    title: str = Field(..., min_length=1, max_length=255, description="Título do livro", example="Clean Code")
+    isbn: Optional[str] = Field(..., min_length=10, max_length=17, description="ISBN do livro no formato ISBN-10 ou ISBN-13", example="978-0132350884")
+    authors: List['Author'] = Field(default_factory=list, description="Lista de autores do livro")
+
     class Config:
         from_attributes = True
-        
+
     def __str__(self):
         return f"Book: {self.title} ({self.isbn})"
-    
+
 # Resolve forward references
 from .author import Author
 Book.model_rebuild()

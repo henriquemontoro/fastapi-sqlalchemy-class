@@ -2,18 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException
 from repositories.book_repository import BookRepository
 from database.database import get_db
 from sqlalchemy.orm import Session
-from dtos.book_dto import BookResponse
+from dtos.book_dto import BookResponse, UpdateBookRequest
 from use_cases.books.update_book_use_case.update_book_use_case import UpdateBookUseCase
-from dtos.book_dto import UpdateBookRequest
+from pathlib import Path
 
 router = APIRouter()
 
+_docs = (Path(__file__).parent.parent.parent.parent / "docs" / "update_book.md").read_text()
 
 def get_use_case(db: Session = Depends(get_db)) -> UpdateBookUseCase:
     book_repository = BookRepository(db)
     return UpdateBookUseCase(book_repository)
 
-@router.put("/books/{book_id}", response_model=BookResponse)
+@router.put("/books/{book_id}", response_model=BookResponse, description=_docs, summary="Atualizacao de Livro", tags=["Books"])
 def update_book(book_id: int, request: UpdateBookRequest, use_case: UpdateBookUseCase = Depends(get_use_case)):
     book = use_case.execute(book_id, request.title, request.isbn)
     if not book:

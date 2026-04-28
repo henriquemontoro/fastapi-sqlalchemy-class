@@ -4,14 +4,17 @@ from database.database import get_db
 from sqlalchemy.orm import Session
 from dtos.book_dto import BookResponse
 from use_cases.books.get_book_by_id_use_case.get_book_by_id_use_case import GetBookByIdUseCase
+from pathlib import Path
 
 router = APIRouter()
+
+_docs = (Path(__file__).parent.parent.parent.parent / "docs" / "get_book_by_id.md").read_text()
 
 def get_use_case(db: Session = Depends(get_db)) -> GetBookByIdUseCase:
     book_repository = BookRepository(db)
     return GetBookByIdUseCase(book_repository)
 
-@router.get("/books/{book_id}", response_model=BookResponse)
+@router.get("/books/{book_id}", response_model=BookResponse, description=_docs, summary="Busca de Livro por ID", tags=["Books"])
 def get_book_by_id(book_id: int, use_case: GetBookByIdUseCase = Depends(get_use_case)):
     book = use_case.execute(book_id)
     if not book:
